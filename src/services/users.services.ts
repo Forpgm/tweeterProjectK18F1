@@ -10,14 +10,14 @@ class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
       payload: { user_id, token_type: TokenType.AccessToken },
-      options: { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN }
+      options: { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_IN as string }
     })
   }
 
   private signRefreshToken(user_id: string) {
     return signToken({
       payload: { user_id, token_type: TokenType.RefreshToken },
-      options: { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN }
+      options: { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_IN as string }
     })
   }
 
@@ -37,7 +37,7 @@ class UsersService {
       this.signRefreshToken(user_id)
     ])
 
-    return result
+    return { access_token, refresh_token }
   }
   async checkEmailExist(email: string) {
     //vào database và tìm user có email này

@@ -45,7 +45,7 @@ export const registerValidator = validate(
       isEmail: true,
       trim: true,
       custom: {
-        options: async (value, { req }) => {
+        options: async (value) => {
           const isExistEmail = await usersService.checkEmailExist(value)
           if (isExistEmail) {
             throw new Error('email already exists')
@@ -93,10 +93,11 @@ export const registerValidator = validate(
           minNumbers: 1,
           minSymbols: 1,
           returnScore: false
-        }
+        },
+        errorMessage:
+          'confirm_password must be at least 8 chars long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol'
       },
-      errorMessage:
-        'confirm_password must be at least 8 chars long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 symbol',
+
       custom: {
         options: (value, { req }) => {
           if (value !== req.body.password) {

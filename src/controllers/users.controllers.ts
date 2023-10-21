@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
-import databaseService from '~/services/database.services'
-import User from '~/models/schemas/User.schema'
-import userService from '~/services/users.services'
+import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { RegisterReqBody } from '~/models/requests/User.request'
 export const loginController = (req: Request, res: Response) => {
@@ -24,7 +22,7 @@ export const loginController = (req: Request, res: Response) => {
 export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   try {
     //tạo 1 user mới và bỏ vào collection users trong database
-    const result = await userService.register(req.body)
+    const result = await usersService.register(req.body)
 
     return res.json({
       message: 'register successfully',
