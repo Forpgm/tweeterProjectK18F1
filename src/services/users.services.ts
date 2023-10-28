@@ -14,6 +14,10 @@ class UsersService {
     })
   }
 
+  private signAccessTokenAndRefreshToken(user_id: string) {
+    return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
+  }
+
   private signRefreshToken(user_id: string) {
     return signToken({
       payload: { user_id, token_type: TokenType.RefreshToken },
@@ -32,10 +36,7 @@ class UsersService {
     //lấy user_id từ acccount vừa tạo
     const user_id = result.insertedId.toString()
     //từ user_id tạo ra 1 access token và 1 refresh token
-    const [access_token, refresh_token] = await Promise.all([
-      this.signAccessToken(user_id),
-      this.signRefreshToken(user_id)
-    ])
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
 
     return { access_token, refresh_token }
   }
@@ -43,6 +44,13 @@ class UsersService {
     //vào database và tìm user có email này
     const user = await databaseService.users.findOne({ email })
     return Boolean(user)
+  }
+
+  async login(user_id: string) {
+    //dùng cái user_id tạo access và refresh token
+    const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
+    //return access và refresh token cho controller
+    return { access_token, refresh_token }
   }
 }
 

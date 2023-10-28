@@ -1,7 +1,8 @@
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 const app = express()
 import usersRouter from './routes/users.routes'
 import databaseService from './services/database.services'
+import { defaultErrorHandler } from './middlewares/error.middlewares'
 const port = 3000
 databaseService.connect()
 
@@ -13,6 +14,9 @@ app.get('/', (req, res) => {
 
 // http://localhost:3000/users/tweets
 app.use('/users', usersRouter) //route handler
+
+//app sd 1 error handler tổng
+app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Project twitter này đang chạy trên post ${port}`)
 })
