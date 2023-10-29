@@ -5,6 +5,9 @@ import { hashPassword } from '~/utils/crypto'
 import { signToken } from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import { config } from 'dotenv'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { ObjectId } from 'mongodb'
+import { USERS_MESSAGES } from '~/constants/messages'
 config()
 class UsersService {
   private signAccessToken(user_id: string) {
@@ -37,9 +40,16 @@ class UsersService {
     const user_id = result.insertedId.toString()
     //từ user_id tạo ra 1 access token và 1 refresh token
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
-
+    //lưu refresh token vào database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        token: refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
     return { access_token, refresh_token }
   }
+
   async checkEmailExist(email: string) {
     //vào database và tìm user có email này
     const user = await databaseService.users.findOne({ email })
@@ -49,8 +59,22 @@ class UsersService {
   async login(user_id: string) {
     //dùng cái user_id tạo access và refresh token
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id)
-    //return access và refresh token cho controller
+    //lưu refresh token vào database
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({
+        token: refresh_token,
+        user_id: new ObjectId(user_id)
+      })
+    )
     return { access_token, refresh_token }
+  }
+
+  async logout(refresh_token: string) {
+    //dùng refresh_token tìm và xóa
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
+    }
   }
 }
 
