@@ -16,7 +16,7 @@ export const defaultErrorHandler = (err: any, req: Request, res: Response, next:
   Object.getOwnPropertyNames(err).forEach((key) => {
     Object.defineProperty(err, key, { enumerable: true })
   })
-  //4nems lỗi đó cho người dùng
+  //ném lỗi đó cho người dùng
   res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     message: err.message,
     errorInfor: omit(err, ['stack'])
