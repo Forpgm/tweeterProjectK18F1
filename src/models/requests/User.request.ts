@@ -1,3 +1,4 @@
+import exp from 'constants'
 import { verify } from 'crypto'
 import { JwtPayload } from 'jsonwebtoken'
 import { TokenType } from '~/constants/enums'
@@ -22,4 +23,12 @@ export interface TokenPayload extends JwtPayload {
 
 export interface EmailVerifyReqBody {
   email_verify_token: string
+}
+
+export interface ForgotPasswordReqBody {
+  email: string
+}
+
+export interface VerifyForgotPasswordTokenReqBody {
+  forgot_password_token: string
 }

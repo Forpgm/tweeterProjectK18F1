@@ -1,12 +1,22 @@
 import { NextFunction, Request, Response } from 'express'
 import usersService from '~/services/users.services'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { EmailVerifyReqBody, LogoutReqBody, RegisterReqBody, TokenPayload } from '~/models/requests/User.request'
+import {
+  EmailVerifyReqBody,
+  ForgotPasswordReqBody,
+  LogoutReqBody,
+  RegisterReqBody,
+  TokenPayload,
+  VerifyForgotPasswordTokenReqBody
+} from '~/models/requests/User.request'
 import User from '~/models/schemas/User.schema'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
 import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { UserVerifyStatus } from '~/constants/enums'
+import exp from 'constants'
+import { ErrorWithStatus } from '~/models/Errors'
 
 export const loginController = async (req: Request, res: Response) => {
   //vào req lấy user ra, và lấy _id của user đó
@@ -39,21 +49,28 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
 }
 
 export const emailVerifyController = async (req: Request<ParamsDictionary, any, EmailVerifyReqBody>, res: Response) => {
-  //khi mà req vào được đây nghĩa là email_verify_token đã valid
+  //khi mà req vào được đây nghĩa là email_verify_token đã valid | HỢP LỆ
   //đồng thời trong req sẽ có decoded_email_verify_token
   const { user_id } = req.decoded_email_verify_token as TokenPayload
-  //tìm xem có user có mã này không
+  //tìm xem có user có mã này không và đã verify chưa
   const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
   if (user === null) {
     return res.status(HTTP_STATUS.NOT_FOUND).json({
       message: USERS_MESSAGES.USER_NOT_FOUND
     })
   }
+
   //nếu có user đó thì mình sẽ kiểm tra xem user đó có lưu email_verify_token không
   if (user.email_verify_token === '') {
     //nếu rỗng nghĩa là verify rồi
     return res.json({
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
+    })
+  }
+  if (user.email_verify_token !== (req.body.email_verify_token as string)) {
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_INCORRECT,
+      status: HTTP_STATUS.UNAUTHORIZED
     })
   }
   //nếu xuống được đây nghĩa là user này là có, và chưa verify
@@ -63,5 +80,56 @@ export const emailVerifyController = async (req: Request<ParamsDictionary, any, 
   return res.json({
     message: USERS_MESSAGES.EMAIL_VERIFY_SUCCESS,
     result
+  })
+}
+
+export const resendEmailVerifyController = async (req: Request, res: Response) => {
+  //nếu qua được hàm này tức là đã qua được accessTokenValidator
+  //req đã có decoded_authorization
+  const { user_id } = req.decoded_authorization as TokenPayload
+  //tìm user có id này
+  const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+  //nếu không có user thì res lỗi
+  if (user === null) {
+    return res.status(HTTP_STATUS.NOT_FOUND).json({
+      message: USERS_MESSAGES.USER_NOT_FOUND
+    })
+  }
+  //nếu co thì xem thử nó đã verify chưa
+  if (user.verify === UserVerifyStatus.Verified && user.email_verify_token === '') {
+    return res.json({
+      message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
+    })
+  }
+  if (user.verify === UserVerifyStatus.Banned) {
+    throw new ErrorWithStatus({
+      message: USERS_MESSAGES.USER_BANNED,
+      status: HTTP_STATUS.FORBIDDEN //403
+    })
+  }
+  //nếu mà xuống được đây nghĩa là user này chưa verify, và bị mất email_verify_token
+  //tiến hành tạo mới email_verify_token và lưu vào DB
+  const result = await usersService.resendEmailVerify(user_id)
+  return res.json(result)
+}
+
+export const forgotPasswordController = async (
+  req: Request<ParamsDictionary, any, ForgotPasswordReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  //vì đã qua forgotPasswordValidator nên req sẽ có user_.id từ user
+  const { _id } = req.user as User
+  //tiến hành tạo forgot_password_token và lưu vào user đó kèm gửi mail cho user đó
+  const result = await usersService.forgotPassword((_id as ObjectId).toString())
+  return res.json(result)
+}
+export const verifyForgotPasswordController = async (
+  req: Request<ParamsDictionary, any, VerifyForgotPasswordTokenReqBody>,
+  res: Response,
+  next: NextFunction
+) => {
+  return res.json({
+    message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS
   })
 }
