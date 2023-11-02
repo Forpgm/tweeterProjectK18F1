@@ -6,6 +6,7 @@ import {
   ForgotPasswordReqBody,
   LogoutReqBody,
   RegisterReqBody,
+  ResetPasswordReqBody,
   TokenPayload,
   VerifyForgotPasswordTokenReqBody
 } from '~/models/requests/User.request'
@@ -17,6 +18,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enums'
 import exp from 'constants'
 import { ErrorWithStatus } from '~/models/Errors'
+import { json } from 'stream/consumers'
 
 export const loginController = async (req: Request, res: Response) => {
   //vào req lấy user ra, và lấy _id của user đó
@@ -124,12 +126,27 @@ export const forgotPasswordController = async (
   const result = await usersService.forgotPassword((_id as ObjectId).toString())
   return res.json(result)
 }
-export const verifyForgotPasswordController = async (
-  req: Request<ParamsDictionary, any, VerifyForgotPasswordTokenReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const verifyForgotPasswordController = async (req: Request, res: Response) => {
   return res.json({
     message: USERS_MESSAGES.VERIFY_FORGOT_PASSWORD_TOKEN_SUCCESS
+  })
+}
+export const resetPasswordController = async (
+  req: Request<ParamsDictionary, any, ResetPasswordReqBody>,
+  res: Response
+) => {
+  const { user_id } = req.decoded_forgot_password_token as TokenPayload
+  const { password } = req.body
+  //dùng user_id đó để tìm user và update lại password
+  const result = await usersService.resetPassword({ user_id, password })
+  return res.json(result)
+}
+export const getMeController = async (req: Request, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  //vào db tìm user có user_id này đưa cho cliend
+  const result = await usersService.getMe(user_id)
+  return res.json({
+    message: USERS_MESSAGES.GET_ME_SUCCESS,
+    result
   })
 }
