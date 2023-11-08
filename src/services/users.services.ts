@@ -11,6 +11,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { Follower } from '~/models/schemas/Followers.schema'
+import { has } from 'lodash'
 config()
 class UsersService {
   private signAccessToken({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
@@ -295,6 +296,26 @@ class UsersService {
 
     return {
       message: USERS_MESSAGES.UNFOLLOW_SUCCESS
+    }
+  }
+
+  async changePassword(user_id: string, password: string) {
+    await databaseService.users.updateOne(
+      {
+        _id: new ObjectId(user_id)
+      },
+      [
+        {
+          $set: {
+            password: hashPassword(password),
+            forgot_password_token: '',
+            updated_at: '$$NOW'
+          }
+        }
+      ]
+    )
+    return {
+      message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
     }
   }
 }
