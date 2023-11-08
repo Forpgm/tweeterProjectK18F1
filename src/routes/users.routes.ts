@@ -8,6 +8,7 @@ import {
   refreshTokenValidator,
   registerValidator,
   resetPasswordValidator,
+  unfollowValidator,
   updateMeValidator,
   verifiedUserValidator,
   verifyForgotPasswordTokenValidator
@@ -23,12 +24,14 @@ import {
   registerController,
   resendEmailVerifyController,
   resetPasswordController,
+  unfollowController,
   updateMeController,
   verifyForgotPasswordController
 } from '~/controllers/users.controllers'
 import { wrapAsync } from '~/utils/handlers'
 import { UpdateMeReqBody } from '~/models/requests/User.request'
 import { filterMiddleware } from '~/middlewares/common.middleware'
+import { wrap } from 'module'
 const usersRouter = Router()
 
 usersRouter.post('/login', loginValidator, wrapAsync(loginController))
@@ -148,8 +151,22 @@ body: {followed_user_id: string}
 
 user id 20: 654aa4a63b010652b1ed612e
 user id 22: 654aa54ff781d57bb8da50e9
-
+id 20 follow id 22
 */
 usersRouter.post('/follow', accessTokenValidator, verifiedUserValidator, followValidator, wrapAsync(followController))
 
+/*
+des: unfollow someone
+path: '/unfollow/:user_id'
+method: delete
+headers: {Authorization: Bearer <access_token>}
+*/
+
+usersRouter.delete(
+  '/unfollow/:user_id',
+  accessTokenValidator,
+  verifiedUserValidator,
+  unfollowValidator,
+  wrapAsync(unfollowController)
+)
 export default usersRouter

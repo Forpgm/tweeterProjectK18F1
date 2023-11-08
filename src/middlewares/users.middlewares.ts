@@ -119,6 +119,33 @@ const imageSchema: ParamSchema = {
     errorMessage: USERS_MESSAGES.IMAGE_LENGTH_MUST_BE_FROM_1_TO_400
   }
 }
+
+const userIdSchema: ParamSchema = {
+  custom: {
+    options: async (value: string, { req }) => {
+      //check value co phai objectId hay khong
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      //vao db tim user do xem co khong
+      const user = await databaseService.users.findOne({
+        _id: new ObjectId(value)
+      })
+      if (user === null) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND, //trong message.ts thêm FOLLOWED_USER_NOT_FOUND: 'Followed user not found'
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+      //neu vuot qua het thi return true
+      return true
+    }
+  }
+}
+
 //viết 1 middleware xử lí validator của req body đó
 //khi đăng nhập thì em sẽ đưa cho anh 1 req.body gồm
 //email và pwd
@@ -532,32 +559,17 @@ export const updateMeValidator = validate(
 export const followValidator = validate(
   checkSchema(
     {
-      followed_user_id: {
-        custom: {
-          options: async (value: string, { req }) => {
-            //check value co phai objectId hay khong
-            if (!ObjectId.isValid(value)) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.INVALID_FOLLOWED_USER_ID,
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            //vao db tim user do xem co khong
-            const followed_user = await databaseService.users.findOne({
-              _id: new ObjectId(value)
-            })
-            if (followed_user === null) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.FOLLOWED_USER_NOT_FOUND, //trong message.ts thêm FOLLOWED_USER_NOT_FOUND: 'Followed user not found'
-                status: HTTP_STATUS.NOT_FOUND
-              })
-            }
-            //neu vuot qua het thi return true
-            return true
-          }
-        }
-      }
+      followed_user_id: userIdSchema
     },
     ['body']
+  )
+)
+
+export const unfollowValidator = validate(
+  checkSchema(
+    {
+      user_id: userIdSchema
+    },
+    ['params']
   )
 )

@@ -5,6 +5,8 @@ import { String } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { TokenType, UserVerifyStatus } from '~/constants/enums'
 
+import { ParamsDictionary } from 'express-serve-static-core'
+
 //định nghĩa những req body | param | query
 export interface RegisterReqBody {
   //định nghĩa 1 req body của register trông ntn
@@ -55,9 +57,13 @@ export interface UpdateMeReqBody {
   cover_photo?: string
 }
 //vì đây là route patch nên ngta truyền thiếu 1 trong các prop trên cũng k sao
-export interface GetProfileReqParams {
+export interface GetProfileReqParams extends ParamsDictionary {
   username: string
 }
 export interface FollowReqBody {
   followed_user_id: string
+}
+
+export interface UnfollowReqParams extends ParamsDictionary {
+  user_id: string
 }

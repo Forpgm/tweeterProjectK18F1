@@ -11,6 +11,7 @@ import {
   RegisterReqBody,
   ResetPasswordReqBody,
   TokenPayload,
+  UnfollowReqParams,
   UpdateMeReqBody,
   VerifyForgotPasswordTokenReqBody
 } from '~/models/requests/User.request'
@@ -181,5 +182,16 @@ export const followController = async (
   const { user_id } = req.decoded_authorization as TokenPayload
   const { followed_user_id } = req.body
   const result = await usersService.follow(user_id, followed_user_id)
+  return res.json(result)
+}
+export const unfollowController = async (req: Request<UnfollowReqParams>, res: Response) => {
+  //lay ra user_id: nguoi muon thuc hien hanh dong unfollow
+
+  const { user_id } = req.decoded_authorization as TokenPayload
+  //lay ra nguoi muon unfollow
+  const { user_id: followed_user_id } = req.params
+
+  //goi ham unfollow
+  const result = await usersService.unfollow(user_id, followed_user_id)
   return res.json(result)
 }
