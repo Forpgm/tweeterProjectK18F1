@@ -6,7 +6,7 @@ import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import { config } from 'dotenv'
-import { UPLOAD_DIR } from './constants/dir'
+import { UPLOAD_IMAGE_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 config()
 
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 // http://localhost:3000/users/tweets
 app.use('/users', usersRouter) //route handler
 app.use('/medias', mediasRouter)
-//app.use('/static', express.static(UPLOAD_DIR))
+//app.use('/static', express.static(UPLOAD_IMAGE_DIR))
 app.use('/static', staticRouter)
 //app sd 1 error handler tổng
 app.use(defaultErrorHandler)

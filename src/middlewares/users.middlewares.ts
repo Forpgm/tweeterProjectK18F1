@@ -525,7 +525,7 @@ export const updateMeValidator = validate(
       website: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_A_STRING ////messages.ts thêm WEBSITE_MUST_BE_A_STRING: 'Website must be a string'
+          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_A_STRING
         },
         trim: true,
         isLength: {
@@ -534,19 +534,19 @@ export const updateMeValidator = validate(
             max: 200
           },
 
-          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_LESS_THAN_200 //messages.ts thêm WEBSITE_LENGTH_MUST_BE_LESS_THAN_200: 'Website length must be less than 200'
+          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH_MUST_BE_LESS_THAN_200
         }
       },
       username: {
         optional: true,
         isString: {
-          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING ////messages.ts thêm USERNAME_MUST_BE_A_STRING: 'Username must be a string'
+          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_A_STRING
         },
         trim: true,
         custom: {
           options: async (value, { req }) => {
             if (REGEX_USERNAME.test(value) === false) {
-              throw new Error(USERS_MESSAGES.USERNAME_MUST_BE_A_STRING) //trong message USERNAME_IS_INVALID: 'Username must be a string and length must be 4 - 15, and contain only letters, numbers, and underscores, not only numbers'
+              throw new Error(USERS_MESSAGES.USERNAME_MUST_BE_A_STRING)
             }
             //tìm user bằng username
             const user = await databaseService.users.findOne({
