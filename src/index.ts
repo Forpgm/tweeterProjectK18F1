@@ -17,6 +17,8 @@ app.use(express.json())
 
 databaseService.connect().then(() => {
   databaseService.indexUsers()
+  databaseService.indexRefreshTokens()
+  databaseService.indexFollowers()
 })
 
 //route mặc định localhost:3000
