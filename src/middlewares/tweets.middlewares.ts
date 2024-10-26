@@ -3,7 +3,6 @@ import { isEmpty } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { MediaType, TweetAudience, TweetType } from '~/constants/enums'
 import { TWEETS_MESSAGES } from '~/constants/messages'
-import Tweet from '~/models/schemas/Tweet.schema'
 import { numberEnumToArray } from '~/utils/common'
 import { validate } from '~/utils/validation'
 
@@ -16,7 +15,7 @@ export const createTweetValidator = validate(
     {
       type: {
         isIn: {
-          options: [tweetTypes], //[[0,1,2,3,4]]
+          options: [tweetTypes], // [0,1,2,3]
           errorMessage: TWEETS_MESSAGES.INVALID_TYPE
         }
       },
@@ -34,7 +33,7 @@ export const createTweetValidator = validate(
             if (type != TweetType.Tweet && !ObjectId.isValid(value)) {
               throw new Error(TWEETS_MESSAGES.PARENT_ID_MUST_BE_A_VALID_TWEET_ID)
             }
-            //neu type la twee thi parent_id phai la null
+            //neu type la tweet thi parent_id phai la null
             if (type == TweetType.Tweet && value != null) {
               throw new Error(TWEETS_MESSAGES.PARENT_ID_MUST_BE_NULL)
             }
@@ -54,7 +53,7 @@ export const createTweetValidator = validate(
               throw new Error(TWEETS_MESSAGES.CONTENT_MUST_BE_A_NON_EMPTY_STRING)
             }
             //neu type la retweet thi content == ''
-            if (type == TweetType.Retweet && value.trim() != '') {
+            if (type == TweetType.Retweet && value.trim() !== '') {
               throw new Error(TWEETS_MESSAGES.CONTENT_MUST_BE_EMPTY_STRING)
             }
             return true

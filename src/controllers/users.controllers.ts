@@ -23,10 +23,7 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import databaseService from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { UserVerifyStatus } from '~/constants/enums'
-import exp from 'constants'
 import { ErrorWithStatus } from '~/models/Errors'
-import { json } from 'stream/consumers'
-import { verify } from 'crypto'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) => {
   //vào req lấy user ra, và lấy _id của user đó
@@ -225,7 +222,10 @@ export const refreshTokenController = async (
 
 export const oAuthController = async (req: Request, res: Response) => {
   const { code } = req.query
+
   const { access_token, refresh_token, new_user } = await usersService.oAuth(code as string)
   const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${access_token}&refresh_token=${refresh_token}&new_user=${new_user}`
+  console.log('urlRedirect', urlRedirect)
+
   return res.redirect(urlRedirect)
 }

@@ -11,9 +11,8 @@ import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { Follower } from '~/models/schemas/Followers.schema'
-import { has } from 'lodash'
 import axios from 'axios'
-import { log } from 'console'
+
 config()
 class UsersService {
   private decodeRefreshToken(refresh_token: string) {
@@ -135,7 +134,7 @@ class UsersService {
   }
   async verifyEmail(user_id: string) {
     //tạo access và refresh token gửi cho client và lưu vào database
-    //đồng thười tim user và update lại email_verify_token thành '', verify: 1, updateAt
+    //đồng thời tim user và update lại email_verify_token thành '', verify: 1, updateAt
     const [token] = await Promise.all([
       this.signAccessTokenAndRefreshToken({ user_id, verify: UserVerifyStatus.Verified }),
       databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
@@ -202,7 +201,7 @@ class UsersService {
     }
   }
   async resetPassword({ user_id, password }: { user_id: string; password: string }) {
-    //dùng user_id đps để tìm user và update lại pwd
+    //dùng user_id đo để tìm user và update lại pwd
     await databaseService.users.updateOne({ _id: new ObjectId(user_id) }, [
       {
         $set: {
@@ -448,6 +447,7 @@ class UsersService {
         confirm_password: password,
         date_of_birth: new Date().toISOString()
       })
+
       return {
         ...data,
         new_user: 1,

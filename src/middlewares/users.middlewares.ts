@@ -261,12 +261,14 @@ export const accessTokenValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED //401
               })
             }
+
             //1. verify access_token này xem có phải của server tạo ra không
             try {
               const decoded_authorization = await verifyToken({
                 token: access_token,
                 secretOrPublickey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
+
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
