@@ -20,6 +20,7 @@ interface UserType {
   username?: string // optional
   avatar?: string // optional
   cover_photo?: string // optional
+  twitter_circle?: ObjectId[]
 }
 
 export default class User {
@@ -30,6 +31,7 @@ export default class User {
   password: string
   created_at: Date
   updated_at: Date
+  twitter_circle: ObjectId[]
   email_verify_token: string
   forgot_password_token: string
   verify: UserVerifyStatus
@@ -59,5 +61,6 @@ export default class User {
     this.username = user.username || ''
     this.avatar = user.avatar || ''
     this.cover_photo = user.cover_photo || ''
+    this.twitter_circle = user.twitter_circle || []
   }
 }

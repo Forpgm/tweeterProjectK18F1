@@ -3,7 +3,7 @@
 //client sẽ tạo 1 req gửi server
 //thì email và password sẽ nằm ở req.body
 
-import { error } from 'console'
+import { error, log } from 'console'
 import { Request, Response, NextFunction } from 'express'
 import { ParamSchema, checkSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'
@@ -624,3 +624,12 @@ export const changePasswordValidator = validate(
     ['body']
   )
 )
+export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    // req.headers vs req.header
+    if (req.headers.authorization) {
+      return middleware(req, res, next)
+    }
+    next()
+  }
+}

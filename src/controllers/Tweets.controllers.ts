@@ -17,3 +17,12 @@ export const createTweetController = async (req: Request<ParamsDictionary, any, 
     result
   })
 }
+export const getTweetDetailController = async (
+  req: Request<ParamsDictionary, any, TweetRequestBody>,
+  res: Response
+) => {
+  return res.json({
+    message: TWEETS_MESSAGES.GET_TWEET_SUCCESSFULLY,
+    result: 'oke'
+  })
+}
