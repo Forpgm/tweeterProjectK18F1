@@ -23,6 +23,6 @@ export const getTweetDetailController = async (
 ) => {
   return res.json({
     message: TWEETS_MESSAGES.GET_TWEET_SUCCESSFULLY,
-    result: 'oke'
+    result: req.tweet
   })
 }
