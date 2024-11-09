@@ -76,6 +76,7 @@ export const USERS_MESSAGES = {
 } as const
 
 export const TWEETS_MESSAGES = {
+  UNLIKE_TWEET_SUCCESSFULLY: 'Unlike tweet successfully',
   INVALID_TYPE: 'Invalid type',
   HASHTAGS_MUST_BE_AN_ARRAY: 'Hashtags must be an array',
   TWEET_NOT_FOUND: 'Tweet not found',
@@ -91,7 +92,8 @@ export const TWEETS_MESSAGES = {
   CREATE_TWEET_SUCCESSFULLY: 'Create tweet successfully',
   INVALID_TWEET_ID: 'Invalid tweet id',
   GET_TWEET_SUCCESSFULLY: 'Get tweet successfully',
-  TWEET_IS_NOT_PUBLIC: 'Tweet is not public'
+  TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
+  LIKE_TWEET_SUCCESSFULLY: 'Like tweet successfully'
 } as const
 
 export const BOOKMARKS_MESSAGES = {

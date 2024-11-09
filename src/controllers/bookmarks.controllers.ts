@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 import { BOOKMARKS_MESSAGES, USERS_MESSAGES } from '~/constants/messages'
-import { BookmarkTweetReqBody } from '~/models/requests/Bookmark.requestst'
+import { BookmarkTweetReqBody } from '~/models/requests/Bookmark.requests'
 import { TokenPayload } from '~/models/requests/User.request'
 import bookmarksService from '~/services/bookmarks.services'
 export const createBookmarkController = async (
