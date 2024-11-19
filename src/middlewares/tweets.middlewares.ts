@@ -188,20 +188,14 @@ export const tweetIdValidator = validate(
                 },
                 {
                   $addFields: {
-                    bookmarks: {
-                      $size: '$bookmarks'
-                    },
-                    likes: {
-                      $size: '$likes'
-                    },
+                    bookmarks: { $size: '$bookmarks' },
+                    likes: { $size: '$likes' },
                     retweet_count: {
                       $size: {
                         $filter: {
                           input: '$tweet_children',
                           as: 'item',
-                          cond: {
-                            $eq: ['$$item.type', TweetType.Retweet]
-                          }
+                          cond: { $eq: ['$$item.type', 1] }
                         }
                       }
                     },
@@ -210,9 +204,7 @@ export const tweetIdValidator = validate(
                         $filter: {
                           input: '$tweet_children',
                           as: 'item',
-                          cond: {
-                            $eq: ['$$item.type', TweetType.Comment]
-                          }
+                          cond: { $eq: ['$$item.type', 2] }
                         }
                       }
                     },
@@ -221,19 +213,16 @@ export const tweetIdValidator = validate(
                         $filter: {
                           input: '$tweet_children',
                           as: 'item',
-                          cond: {
-                            $eq: ['$$item.type', TweetType.QuoteTweet]
-                          }
+                          cond: { $eq: ['$$item.type', 3] }
                         }
                       }
+                    },
+                    views: {
+                      $add: ['$user_views', '$guest_views']
                     }
                   }
                 },
-                {
-                  $project: {
-                    tweet_children: 0
-                  }
-                }
+                { $project: { tweet_children: 0 } }
               ])
               .toArray()
             if (!tweet) {
@@ -288,3 +277,30 @@ export const tweetAudienceValidator = wrapAsync(async (req: Request, res: Respon
   }
   next()
 })
+export const getTweetChildrenValidator = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        custom: {
+          options: (value) => {
+            if (Number(value) < 1 || Number(value) > 100) {
+              throw new Error(TWEETS_MESSAGES.INVALID_LIMIT)
+            }
+            return true
+          }
+        }
+      },
+      page: {
+        isNumeric: true
+      },
+      tweet_type: {
+        isIn: {
+          options: [tweetTypes],
+          errorMessage: TWEETS_MESSAGES.INVALID_TYPE
+        }
+      }
+    },
+    ['query']
+  )
+)
