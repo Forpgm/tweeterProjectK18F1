@@ -12,6 +12,7 @@ import { MongoClient } from 'mongodb'
 import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
+import searchRouter from './routes/search.routes'
 config()
 
 const port = process.env.PORT || 4000
@@ -35,6 +36,7 @@ app.use('/medias', mediasRouter)
 app.use('/tweets', tweetsRouter)
 app.use('/likes', likeRoutes)
 app.use('/bookmarks', bookmarksRouter)
+app.use('/search', searchRouter)
 // app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use('/static', staticRouter)
 

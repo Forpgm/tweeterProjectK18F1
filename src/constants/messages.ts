@@ -103,3 +103,7 @@ export const BOOKMARKS_MESSAGES = {
   CREATED_BOOKMARK_SUCCESSFULLY: 'Created bookmark successfully',
   UNBOOKMARK_TWEET_SUCCESSFULLY: 'Unbookmark tweet successfully'
 } as const
+
+export const SEARCH_MESSAGES = {
+  SEARCH_SUCCESSFULLY: 'Search successfully'
+} as const
