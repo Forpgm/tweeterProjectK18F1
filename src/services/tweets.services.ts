@@ -5,6 +5,7 @@ import { ModifyResult, ObjectId, WithId } from 'mongodb'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import { TweetType } from '~/constants/enums'
 import usersService from './users.services'
+import { T } from '@faker-js/faker/dist/airline-BLb3y-7w'
 
 class TweetsServices {
   async checkAndCreateHashtags(hashtags: string[]) {
@@ -360,7 +361,69 @@ class TweetsServices {
         }
       ])
       .toArray()
-    return newfeeds
+    const tweetIds = newfeeds.map((tweet) => tweet._id as ObjectId)
+    const date = new Date()
+    const [, total] = await Promise.all([
+      databaseService.tweets.updateMany(
+        {
+          _id: {
+            $in: tweetIds
+          }
+        },
+        {
+          $inc: { user_views: 1 },
+          $set: { updated_at: date }
+        }
+      ),
+      await databaseService.tweets
+        .aggregate([
+          {
+            $match: {
+              user_id: {
+                $in: followers
+              }
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          { $unwind: { path: '$user' } },
+          {
+            $match: {
+              $or: [
+                { audience: 0 },
+                {
+                  $and: [
+                    { audience: 1 },
+                    {
+                      'user.twitter_circle': {
+                        $in: [new ObjectId(user_id)]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+    newfeeds.forEach((tweet) => {
+      tweet.updated_at = date
+      tweet.user_views += 1
+    })
+    return {
+      total: total[0].total,
+      tweets: newfeeds
+    }
   }
 }
 const tweetsServices = new TweetsServices()

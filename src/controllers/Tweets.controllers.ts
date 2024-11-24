@@ -1,15 +1,12 @@
 //tweets.controllers.ts
-
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { update } from 'lodash'
 import { TweetType } from '~/constants/enums'
 import { TWEETS_MESSAGES } from '~/constants/messages'
 import { Pagination, TweetParam, TweetQuery, TweetRequestBody } from '~/models/requests/Tweet.requests'
 import { TokenPayload } from '~/models/requests/User.request'
 import databaseService from '~/services/database.services'
 import tweetsServices from '~/services/tweets.services'
-import usersService from '~/services/users.services'
 export const createTweetController = async (req: Request<ParamsDictionary, any, TweetRequestBody>, res: Response) => {
   //muon dang bai thi can co: user_id: biet ai la nguoi dang, body: noi dung bai dang
   const body = req.body as TweetRequestBody
@@ -48,8 +45,11 @@ export const getTweetChildrenController = async (req: Request<TweetParam, any, a
   return res.json({
     message: TWEETS_MESSAGES.GET_TWEET_CHILDREN_SUCCESSFULLY,
     result: {
-      total,
-      tweets
+      tweets,
+      tweet_type,
+      page,
+      limit,
+      total_page: Math.ceil(total / limit)
     }
   })
 }
@@ -60,6 +60,11 @@ export const getNewFeedsController = async (req: Request<ParamsDictionary, any, 
   const result = await tweetsServices.getNewFeeds(user_id, limit, page)
   return res.json({
     message: TWEETS_MESSAGES.GET_NEW_FEEDS_SUCCESSFULLY,
-    result
+    result: {
+      tweets: result.tweets,
+      page,
+      limit,
+      total_page: Math.ceil(result.total / limit)
+    }
   })
 }
