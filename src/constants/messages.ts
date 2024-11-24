@@ -95,7 +95,8 @@ export const TWEETS_MESSAGES = {
   TWEET_IS_NOT_PUBLIC: 'Tweet is not public',
   GET_TWEET_CHILDREN_SUCCESSFULLY: 'Get tweet children successfully',
   LIKE_TWEET_SUCCESSFULLY: 'Like tweet successfully',
-  INVALID_LIMIT: 'Invalid limit'
+  INVALID_LIMIT: 'Invalid limit',
+  GET_NEW_FEEDS_SUCCESSFULLY: 'Get new feeds successfully'
 } as const
 
 export const BOOKMARKS_MESSAGES = {

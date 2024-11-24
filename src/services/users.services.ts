@@ -455,6 +455,28 @@ class UsersService {
       }
     }
   }
+  async getFollowers(user_id: string) {
+    const followers = await databaseService.followers
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(user_id)
+          }
+        },
+
+        {
+          $project: {
+            _id: 0,
+            followed_user_id: 1
+          }
+        }
+      ])
+      .toArray()
+    const followerIds = followers.map((follower) => {
+      return follower.followed_user_id
+    })
+    return followerIds
+  }
 }
 
 const usersService = new UsersService()
