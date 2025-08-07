@@ -5,7 +5,6 @@ import { ModifyResult, ObjectId, WithId } from 'mongodb'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import { TweetType } from '~/constants/enums'
 import usersService from './users.services'
-import { T } from '@faker-js/faker/dist/airline-BLb3y-7w'
 
 class TweetsServices {
   async checkAndCreateHashtags(hashtags: string[]) {

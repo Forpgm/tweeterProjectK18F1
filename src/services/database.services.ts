@@ -7,6 +7,7 @@ import Tweet from '~/models/schemas/Tweet.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import Bookmark from '~/models/schemas/Bookmarks.schema'
 import Like from '~/models/schemas/Likes.schema'
+
 config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@tweetproject.67a28nd.mongodb.net/?retryWrites=true&w=majority`
 
@@ -61,7 +62,12 @@ class DatabaseService {
     if (isExisted) return
     await this.followers.createIndex({ user_id: 1, followed_user_id: 1 })
   }
-
+  async indexTweets() {
+    const isExisted = await this.tweets.indexExists(['content_text'])
+    if (!isExisted) {
+      await this.tweets.createIndex({ content: 'text' }, { default_language: 'none' })
+    }
+  }
   get tweets(): Collection<Tweet> {
     return this.db.collection(process.env.DB_TWEETS_COLLECTION as string)
   }

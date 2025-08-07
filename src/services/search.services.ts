@@ -1,8 +1,6 @@
 import { TweetType } from '~/constants/enums'
 import databaseService from './database.services'
 import { ObjectId } from 'mongodb'
-import { sk } from '@faker-js/faker/.'
-import { skip } from 'node:test'
 
 class SearchService {
   async search({ limit, content, page, user_id }: { limit: number; content: string; page: number; user_id: string }) {

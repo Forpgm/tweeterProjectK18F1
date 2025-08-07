@@ -3,7 +3,6 @@
 //client sẽ tạo 1 req gửi server
 //thì email và password sẽ nằm ở req.body
 
-import { error, log } from 'console'
 import { Request, Response, NextFunction } from 'express'
 import { ParamSchema, checkSchema } from 'express-validator'
 import { JsonWebTokenError } from 'jsonwebtoken'

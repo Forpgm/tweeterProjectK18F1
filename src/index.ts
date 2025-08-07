@@ -1,11 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express'
+import { envConfig, isProduction } from '~/constants/config'
 const app = express()
 import usersRouter from './routes/users.routes'
 import mediasRouter from './routes/medias.routes'
 import databaseService from './services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
 import { initFolder } from './utils/file'
-import { config } from 'dotenv'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from './constants/dir'
 import staticRouter from './routes/static.routes'
 import { MongoClient } from 'mongodb'
@@ -13,9 +13,9 @@ import tweetsRouter from './routes/tweets.routes'
 import bookmarksRouter from './routes/bookmarks.routes'
 import likeRoutes from './routes/likes.routes'
 import searchRouter from './routes/search.routes'
-config()
 
-const port = process.env.PORT || 4000
+const port = envConfig.port
+
 initFolder()
 app.use(express.json())
 
@@ -23,6 +23,7 @@ databaseService.connect().then(() => {
   databaseService.indexUsers()
   databaseService.indexRefreshTokens()
   databaseService.indexFollowers()
+  databaseService.indexTweets()
 })
 
 //route mặc định localhost:3000
@@ -40,8 +41,6 @@ app.use('/search', searchRouter)
 // app.use('/static/video', express.static(UPLOAD_VIDEO_DIR))
 app.use('/static', staticRouter)
 
-//app sd 1 error handler tổng
-app.use(defaultErrorHandler)
 app.listen(port, () => {
   console.log(`Project twitter này đang chạy trên post ${port}`)
 })

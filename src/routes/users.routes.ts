@@ -35,7 +35,7 @@ import {
 import { wrapAsync } from '~/utils/handlers'
 import { UpdateMeReqBody } from '~/models/requests/User.request'
 import { filterMiddleware } from '~/middlewares/common.middleware'
-import { wrap } from 'module'
+
 const usersRouter = Router()
 
 usersRouter.post('/login', loginValidator, wrapAsync(loginController))
